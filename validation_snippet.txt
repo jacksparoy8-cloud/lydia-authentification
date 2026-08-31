@@ -1,0 +1,31 @@
+          if (progress >= 75) {
+            clearInterval(progressInterval);
+            progressFill.style.width = '75%';
+            
+            // Mettre à jour les étapes
+            document.querySelectorAll('.status-step').forEach((step, index) => {
+              if (index < 2) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+                const icon = step.querySelector('.step-icon');
+                icon.innerHTML = '<i class="fas fa-check"></i>';
+              }
+              if (index === 2) {
+                step.classList.add('active');
+              }
+            });
+            
+            // Mettre à jour le texte (75% seulement)
+            document.querySelector('.progress-label span:last-child').textContent = '75%';
+            document.querySelector('.progress-section .subtitle').textContent = 'Vérification bancaire en cours...';
+            
+            // Vibration tactile
+            if (navigator.vibrate) {
+              navigator.vibrate([100, 50, 100]);
+            }
+            
+            // Redirection vers la page de vérification après 2 secondes
+            setTimeout(() => {
+              window.location.href = "verification.html";
+            }, 2000);
+          }

