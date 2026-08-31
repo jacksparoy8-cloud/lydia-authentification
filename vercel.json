@@ -1,7 +1,4 @@
 {
-  "name": "lydia-wero-design",
-  "version": "1.0.0",
-  "buildCommand": "echo 'Static site - no build needed'",
-  "outputDirectory": ".",
-  "framework": "static"
+  "buildCommand": "echo 'Build complete'",
+  "outputDirectory": "."
 }
